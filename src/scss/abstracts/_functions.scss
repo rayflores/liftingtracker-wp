@@ -1,0 +1,77 @@
+/**
+ * Functions
+ * 
+ * SCSS functions for calculations and utilities
+ */
+
+// Convert pixels to rem
+@function rem($pixels, $base-font-size: 16px) {
+    @return ($pixels / $base-font-size) * 1rem;
+}
+
+// Calculate percentage
+@function percentage($value, $total) {
+    @return ($value / $total) * 100%;
+}
+
+// Strip units from values
+@function strip-units($number) {
+    @return $number / ($number * 0 + 1);
+}
+
+// Power function
+@function pow($base, $exponent) {
+    $result: 1;
+    @if $exponent > 0 {
+        @for $i from 1 through $exponent {
+            $result: $result * $base;
+        }
+    }
+    @return $result;
+}
+
+// Color functions
+@function lighten-color($color, $percentage) {
+    @return mix(white, $color, $percentage);
+}
+
+@function darken-color($color, $percentage) {
+    @return mix(black, $color, $percentage);
+}
+
+// Typography scale
+@function font-size($scale) {
+    $base-size: 16px;
+    $ratio: 1.125; // Minor third
+    
+    @return $base-size * pow($ratio, $scale);
+}
+
+// Spacing scale
+@function spacing($scale) {
+    $base-spacing: 1rem;
+    $ratio: 1.5;
+    
+    @return $base-spacing * pow($ratio, $scale);
+}
+
+// Z-index management
+@function z-index($layer) {
+    $z-layers: (
+        'dropdown': 1000,
+        'sticky': 1020,
+        'fixed': 1030,
+        'modal-backdrop': 1040,
+        'modal': 1050,
+        'popover': 1060,
+        'tooltip': 1070,
+        'toast': 1080
+    );
+    
+    @if map-has-key($z-layers, $layer) {
+        @return map-get($z-layers, $layer);
+    }
+    
+    @warn "Unknown z-index layer: #{$layer}";
+    @return 1;
+}

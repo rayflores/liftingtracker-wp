@@ -1,0 +1,162 @@
+/**
+ * Buttons
+ * 
+ * Button component styles
+ */
+
+.btn {
+    @include button-base;
+    
+    // Size variants
+    &.btn-sm {
+        padding: $spacing-xs $spacing-sm;
+        font-size: $font-size-sm;
+    }
+    
+    &.btn-lg {
+        padding: $spacing-md $spacing-lg;
+        font-size: $font-size-lg;
+    }
+    
+    // Style variants
+    &.btn-primary {
+        @include button-primary;
+    }
+    
+    &.btn-secondary {
+        @include button-secondary;
+    }
+    
+    &.btn-outline {
+        @include button-outline;
+    }
+    
+    &.btn-success {
+        background-color: $success-color;
+        color: $white;
+        
+        &:hover:not(:disabled) {
+            background-color: $success-dark;
+        }
+    }
+    
+    &.btn-warning {
+        background-color: $warning-color;
+        color: $white;
+        
+        &:hover:not(:disabled) {
+            background-color: $warning-dark;
+        }
+    }
+    
+    &.btn-error {
+        background-color: $error-color;
+        color: $white;
+        
+        &:hover:not(:disabled) {
+            background-color: $error-dark;
+        }
+    }
+    
+    // Special variants
+    &.btn-ghost {
+        background-color: transparent;
+        color: $text-primary;
+        border-color: transparent;
+        
+        &:hover:not(:disabled) {
+            background-color: $bg-secondary;
+        }
+    }
+    
+    &.btn-link {
+        background-color: transparent;
+        color: $primary-color;
+        border-color: transparent;
+        padding: 0;
+        text-decoration: underline;
+        
+        &:hover:not(:disabled) {
+            color: $primary-dark;
+        }
+    }
+    
+    // Icon buttons
+    &.btn-icon {
+        padding: $spacing-sm;
+        
+        .icon {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+    }
+    
+    // Loading state
+    &.btn-loading {
+        position: relative;
+        color: transparent;
+        
+        &::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            @include loading-spinner(16px, currentColor);
+        }
+    }
+    
+    // Block button
+    &.btn-block {
+        display: block;
+        width: 100%;
+    }
+}
+
+// Button group
+.btn-group {
+    display: inline-flex;
+    
+    .btn {
+        border-radius: 0;
+        border-right-width: 0;
+        
+        &:first-child {
+            border-top-left-radius: $border-radius-md;
+            border-bottom-left-radius: $border-radius-md;
+        }
+        
+        &:last-child {
+            border-top-right-radius: $border-radius-md;
+            border-bottom-right-radius: $border-radius-md;
+            border-right-width: $border-width-thin;
+        }
+        
+        &:not(:first-child):not(:last-child) {
+            border-radius: 0;
+        }
+    }
+}
+
+// Floating action button
+.fab {
+    @include button-primary;
+    position: fixed;
+    bottom: $spacing-xl;
+    right: $spacing-xl;
+    width: 56px;
+    height: 56px;
+    border-radius: $border-radius-full;
+    box-shadow: $shadow-lg;
+    z-index: z-index('fixed');
+    
+    .icon {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+    
+    @include mobile {
+        bottom: $spacing-lg;
+        right: $spacing-lg;
+    }
+}

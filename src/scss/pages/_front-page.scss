@@ -1,0 +1,302 @@
+/**
+ * Front Page Styles
+ * 
+ * Styles for the front-page.php template that mirrors home.jsx
+ */
+
+@layer components {
+  /* Hero Section */
+  .hero-section {
+    min-height: 70vh;
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+  }
+
+  .hero-content {
+    max-width: 1200px;
+  }
+
+  .hero-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: clamp(1.1rem, 2vw, 1.25rem);
+    line-height: 1.6;
+    opacity: 0.9;
+  }
+
+  /* Dashboard Cards */
+  .dashboard-card {
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .dashboard-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 8px 12px -4px rgba(0, 0, 0, 0.1);
+  }
+
+  .dashboard-card-header {
+    height: 14rem;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dashboard-card-header.blue {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  }
+
+  .dashboard-card-header.green {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  }
+
+  .dashboard-card-header.amber {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  }
+
+  .dashboard-card-content {
+    padding: 1.5rem;
+  }
+
+  .dashboard-card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 1rem;
+  }
+
+  /* Progress Bar */
+  .progress-bar {
+    width: 100%;
+    height: 0.5rem;
+    background-color: #e5e7eb;
+    border-radius: 9999px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background-color: #10b981;
+    border-radius: 9999px;
+    transition: width 0.3s ease;
+  }
+
+  /* Exercise List */
+  .exercise-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .exercise-item:last-child {
+    border-bottom: none;
+  }
+
+  .exercise-name {
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+
+  .exercise-badge {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 9999px;
+  }
+
+  .exercise-badge.completed {
+    background-color: #dcfce7;
+    color: #166534;
+  }
+
+  .exercise-badge.incomplete {
+    background-color: #f3f4f6;
+    color: #374151;
+  }
+
+  /* Achievement Items */
+  .achievement-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+  }
+
+  .achievement-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    background-color: #f59e0b;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .achievement-text {
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+
+  /* Quick Actions */
+  .quick-action-card {
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .quick-action-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    text-decoration: none;
+  }
+
+  .quick-action-content {
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  .quick-action-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .quick-action-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+  }
+
+  /* Button Styles */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    font-size: 0.875rem;
+  }
+
+  .btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+  }
+
+  .btn-primary {
+    background-color: #ef4444;
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background-color: #dc2626;
+    transform: translateY(-1px);
+  }
+
+  .btn-outline {
+    background-color: transparent;
+    border: 2px solid currentColor;
+  }
+
+  .btn-outline:hover {
+    background-color: currentColor;
+    color: white;
+  }
+
+  .btn-outline.border-white {
+    border-color: white;
+    color: white;
+  }
+
+  .btn-outline.border-white:hover {
+    background-color: white;
+    color: black;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .hero-section {
+      min-height: 60vh;
+      padding-top: 2rem;
+      padding-bottom: 2rem;
+    }
+
+    .dashboard-card {
+      margin-top: 1rem;
+    }
+
+    .dashboard-card-header {
+      height: 10rem;
+    }
+
+    .dashboard-card-content {
+      padding: 1rem;
+    }
+
+    .btn {
+      width: 100%;
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  /* Section Spacing */
+  .dashboard-section {
+    margin-top: -8rem;
+    background-color: #000000;
+    padding: 1rem 0 5rem 0;
+  }
+
+  .section-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: white;
+  }
+
+  /* Material Icons */
+  .material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .material-icons.text-5xl {
+    font-size: 3rem;
+  }
+
+  .material-icons.text-4xl {
+    font-size: 2.25rem;
+  }
+
+  .material-icons.text-lg {
+    font-size: 1.125rem;
+  }
+}

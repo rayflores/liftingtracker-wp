@@ -1,0 +1,30 @@
+{
+  "name": "liftingtracker-pro",
+  "version": "1.0.0",
+  "description": "LiftingTracker Pro WordPress Theme",
+  "author": "Your Name",
+  "license": "GPL-2.0-or-later",
+  "scripts": {
+    "build": "wp-scripts build",
+    "start": "wp-scripts start",
+    "packages-update": "wp-scripts packages-update",
+    "lint:css": "wp-scripts lint-style",
+    "lint:js": "wp-scripts lint-js",
+    "format:js": "wp-scripts format-js",
+    "lint:pkg-json": "wp-scripts lint-pkg-json"
+  },
+  "devDependencies": {
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/typography": "^0.5.16",
+    "@wordpress/scripts": "^26.19.0",
+    "autoprefixer": "^10.4.21",
+    "tailwindcss": "^3.4.17"
+  },
+  "dependencies": {
+    "@wordpress/api-fetch": "^6.46.0",
+    "@wordpress/components": "^25.15.0",
+    "@wordpress/element": "^5.26.0",
+    "@wordpress/i18n": "^4.49.0"
+  }
+}

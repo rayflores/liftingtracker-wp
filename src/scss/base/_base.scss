@@ -1,0 +1,183 @@
+/**
+ * Base
+ * 
+ * Base styles for the theme
+ */
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: $bg-primary;
+    color: $text-primary;
+    overflow-x: hidden;
+}
+
+// Container
+.container {
+    @include container;
+}
+
+// Main content area
+.main-content {
+    min-height: calc(100vh - #{$header-height} - #{$footer-height});
+    padding-top: $spacing-lg;
+    padding-bottom: $spacing-lg;
+}
+
+// Skip link for accessibility
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: $primary-color;
+    color: $white;
+    padding: 8px;
+    text-decoration: none;
+    border-radius: $border-radius-sm;
+    z-index: 100;
+    
+    &:focus {
+        top: 6px;
+    }
+}
+
+// Screen reader only text
+.sr-only {
+    @include visually-hidden;
+}
+
+// Focus styles
+.focus-visible {
+    outline: 2px solid $primary-color;
+    outline-offset: 2px;
+}
+
+// Selection styles
+::selection {
+    background-color: rgba($primary-color, 0.3);
+    color: $text-primary;
+}
+
+// Scrollbar styles
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: $bg-secondary;
+}
+
+::-webkit-scrollbar-thumb {
+    background: $gray-400;
+    border-radius: $border-radius-full;
+    
+    &:hover {
+        background: $gray-500;
+    }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+    .btn {
+        border: 2px solid currentColor;
+    }
+    
+    .card {
+        border: 2px solid currentColor;
+    }
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+// Print styles
+@media print {
+    *,
+    *::before,
+    *::after {
+        background: transparent !important;
+        color: black !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+    
+    a,
+    a:visited {
+        text-decoration: underline;
+    }
+    
+    a[href]::after {
+        content: " (" attr(href) ")";
+    }
+    
+    abbr[title]::after {
+        content: " (" attr(title) ")";
+    }
+    
+    pre {
+        white-space: pre-wrap !important;
+    }
+    
+    pre,
+    blockquote {
+        border: 1px solid #999;
+        page-break-inside: avoid;
+    }
+    
+    thead {
+        display: table-header-group;
+    }
+    
+    tr,
+    img {
+        page-break-inside: avoid;
+    }
+    
+    p,
+    h2,
+    h3 {
+        orphans: 3;
+        widows: 3;
+    }
+    
+    h2,
+    h3 {
+        page-break-after: avoid;
+    }
+    
+    .navbar,
+    .sidebar,
+    .footer {
+        display: none;
+    }
+}
+
+/* Base Navigation List Styles */
+nav ul,
+nav ol,
+.nav-menu,
+.navigation-menu,
+#mobile-menu ul {
+  list-style: none;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+nav li,
+.nav-menu li,
+.navigation-menu li,
+#mobile-menu li {
+  list-style: none;
+  list-style-type: none;
+}

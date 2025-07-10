@@ -1,0 +1,328 @@
+/**
+ * Typography
+ * 
+ * Typography styles for the theme
+ */
+
+body {
+    font-family: $font-family-sans;
+    font-size: $font-size-base;
+    font-weight: $font-weight-normal;
+    line-height: $line-height-normal;
+    color: $text-primary;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+// Headings
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: $font-weight-bold;
+    line-height: $line-height-tight;
+    color: $text-primary;
+    margin-bottom: $spacing-md;
+}
+
+h1 {
+    font-size: $font-size-4xl;
+    
+    @include mobile {
+        font-size: $font-size-3xl;
+    }
+}
+
+h2 {
+    font-size: $font-size-3xl;
+    
+    @include mobile {
+        font-size: $font-size-2xl;
+    }
+}
+
+h3 {
+    font-size: $font-size-2xl;
+    
+    @include mobile {
+        font-size: $font-size-xl;
+    }
+}
+
+h4 {
+    font-size: $font-size-xl;
+    
+    @include mobile {
+        font-size: $font-size-lg;
+    }
+}
+
+h5 {
+    font-size: $font-size-lg;
+}
+
+h6 {
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+}
+
+// Paragraphs
+p {
+    margin-bottom: $spacing-md;
+    
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+// Links
+a {
+    color: $primary-color;
+    text-decoration: none;
+    transition: color $transition-fast;
+    
+    &:hover {
+        color: $primary-dark;
+        text-decoration: underline;
+    }
+    
+    &:focus {
+        outline: 2px solid $primary-color;
+        outline-offset: 2px;
+    }
+}
+
+// Lists
+ul,
+ol {
+    margin-bottom: $spacing-md;
+    padding-left: $spacing-lg;
+    
+    li {
+        margin-bottom: $spacing-xs;
+    }
+}
+
+ul {
+    list-style-type: disc;
+}
+
+ol {
+    list-style-type: decimal;
+}
+
+// Blockquotes
+blockquote {
+    margin: $spacing-lg 0;
+    padding: $spacing-md $spacing-lg;
+    border-left: 4px solid $primary-color;
+    background-color: $bg-secondary;
+    font-style: italic;
+    
+    p {
+        margin-bottom: 0;
+    }
+    
+    cite {
+        display: block;
+        margin-top: $spacing-sm;
+        font-size: $font-size-sm;
+        color: $text-secondary;
+        font-style: normal;
+        
+        &::before {
+            content: "— ";
+        }
+    }
+}
+
+// Code
+code {
+    font-family: $font-family-mono;
+    font-size: $font-size-sm;
+    background-color: $bg-tertiary;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $border-radius-sm;
+    color: $text-primary;
+}
+
+pre {
+    background-color: $bg-dark;
+    color: $text-inverse;
+    padding: $spacing-md;
+    border-radius: $border-radius-md;
+    overflow-x: auto;
+    margin-bottom: $spacing-md;
+    
+    code {
+        background-color: transparent;
+        padding: 0;
+        color: inherit;
+    }
+}
+
+// Emphasis
+strong,
+b {
+    font-weight: $font-weight-bold;
+}
+
+em,
+i {
+    font-style: italic;
+}
+
+// Small text
+small {
+    font-size: $font-size-sm;
+    color: $text-secondary;
+}
+
+// Mark/highlight
+mark {
+    background-color: #fef3c7;
+    padding: 0 $spacing-xs;
+    border-radius: $border-radius-sm;
+}
+
+// Abbreviations
+abbr[title] {
+    border-bottom: 1px dotted $text-secondary;
+    cursor: help;
+    text-decoration: none;
+}
+
+// Utility classes
+.text-center {
+    text-align: center;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-justify {
+    text-align: justify;
+}
+
+.text-primary {
+    color: $text-primary;
+}
+
+.text-secondary {
+    color: $text-secondary;
+}
+
+.text-tertiary {
+    color: $text-tertiary;
+}
+
+.text-inverse {
+    color: $text-inverse;
+}
+
+.text-success {
+    color: $success-color;
+}
+
+.text-warning {
+    color: $warning-color;
+}
+
+.text-error {
+    color: $error-color;
+}
+
+.text-info {
+    color: $info-color;
+}
+
+.text-xs {
+    font-size: $font-size-xs;
+}
+
+.text-sm {
+    font-size: $font-size-sm;
+}
+
+.text-base {
+    font-size: $font-size-base;
+}
+
+.text-lg {
+    font-size: $font-size-lg;
+}
+
+.text-xl {
+    font-size: $font-size-xl;
+}
+
+.text-2xl {
+    font-size: $font-size-2xl;
+}
+
+.text-3xl {
+    font-size: $font-size-3xl;
+}
+
+.text-4xl {
+    font-size: $font-size-4xl;
+}
+
+.text-5xl {
+    font-size: $font-size-5xl;
+}
+
+.font-light {
+    font-weight: $font-weight-light;
+}
+
+.font-normal {
+    font-weight: $font-weight-normal;
+}
+
+.font-medium {
+    font-weight: $font-weight-medium;
+}
+
+.font-semibold {
+    font-weight: $font-weight-semibold;
+}
+
+.font-bold {
+    font-weight: $font-weight-bold;
+}
+
+.font-black {
+    font-weight: $font-weight-black;
+}
+
+.leading-tight {
+    line-height: $line-height-tight;
+}
+
+.leading-normal {
+    line-height: $line-height-normal;
+}
+
+.leading-relaxed {
+    line-height: $line-height-relaxed;
+}
+
+.truncate {
+    @include text-truncate;
+}
+
+.clamp-2 {
+    @include text-clamp(2);
+}
+
+.clamp-3 {
+    @include text-clamp(3);
+}

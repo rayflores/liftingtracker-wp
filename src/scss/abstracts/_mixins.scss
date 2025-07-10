@@ -1,0 +1,261 @@
+/**
+ * Mixins
+ * 
+ * Reusable SCSS mixins for common patterns
+ */
+
+// Responsive breakpoints
+@mixin mobile {
+    @media (max-width: #{$breakpoint-sm - 1px}) {
+        @content;
+    }
+}
+
+@mixin tablet {
+    @media (min-width: #{$breakpoint-sm}) and (max-width: #{$breakpoint-lg - 1px}) {
+        @content;
+    }
+}
+
+@mixin desktop {
+    @media (min-width: #{$breakpoint-lg}) {
+        @content;
+    }
+}
+
+@mixin large-desktop {
+    @media (min-width: #{$breakpoint-xl}) {
+        @content;
+    }
+}
+
+// Button mixins
+@mixin button-base {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: $spacing-sm $spacing-md;
+    border: $border-width-thin solid transparent;
+    border-radius: $border-radius-md;
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all $transition-fast;
+    
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba($primary-color, 0.3);
+    }
+    
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+@mixin button-primary {
+    @include button-base;
+    background-color: $primary-color;
+    color: $white;
+    
+    &:hover:not(:disabled) {
+        background-color: $primary-dark;
+    }
+    
+    &:active:not(:disabled) {
+        background-color: $primary-dark;
+        transform: translateY(1px);
+    }
+}
+
+@mixin button-secondary {
+    @include button-base;
+    background-color: $white;
+    color: $primary-color;
+    border-color: $primary-color;
+    
+    &:hover:not(:disabled) {
+        background-color: $primary-color;
+        color: $white;
+    }
+}
+
+@mixin button-outline {
+    @include button-base;
+    background-color: transparent;
+    color: $primary-color;
+    border-color: $primary-color;
+    
+    &:hover:not(:disabled) {
+        background-color: $primary-color;
+        color: $white;
+    }
+}
+
+// Form mixins
+@mixin form-field {
+    width: 100%;
+    padding: $spacing-sm $spacing-md;
+    border: $border-width-thin solid $gray-300;
+    border-radius: $border-radius-md;
+    font-size: $font-size-base;
+    transition: border-color $transition-fast;
+    
+    &:focus {
+        outline: none;
+        border-color: $primary-color;
+        box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+    }
+    
+    &.error {
+        border-color: $error-color;
+        
+        &:focus {
+            box-shadow: 0 0 0 3px rgba($error-color, 0.1);
+        }
+    }
+    
+    &::placeholder {
+        color: $gray-400;
+    }
+}
+
+@mixin form-label {
+    display: block;
+    margin-bottom: $spacing-xs;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $text-primary;
+}
+
+// Card mixins
+@mixin card {
+    background-color: $white;
+    border: $border-width-thin solid $gray-200;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-sm;
+    overflow: hidden;
+}
+
+@mixin card-header {
+    padding: $spacing-lg;
+    border-bottom: $border-width-thin solid $gray-200;
+    background-color: $bg-secondary;
+}
+
+@mixin card-body {
+    padding: $spacing-lg;
+}
+
+@mixin card-footer {
+    padding: $spacing-lg;
+    border-top: $border-width-thin solid $gray-200;
+    background-color: $bg-secondary;
+}
+
+// Flexbox utilities
+@mixin flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@mixin flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+@mixin flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
+// Text utilities
+@mixin text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@mixin text-clamp($lines: 2) {
+    display: -webkit-box;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+// Spacing utilities
+@mixin container {
+    max-width: $container-max-width;
+    margin: 0 auto;
+    padding: 0 $spacing-md;
+    
+    @include tablet {
+        padding: 0 $spacing-lg;
+    }
+    
+    @include desktop {
+        padding: 0 $spacing-xl;
+    }
+}
+
+// Animation utilities
+@mixin fade-in($duration: $transition-normal) {
+    opacity: 0;
+    animation: fadeIn $duration ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+@mixin slide-up($duration: $transition-normal) {
+    transform: translateY(20px);
+    opacity: 0;
+    animation: slideUp $duration ease-in-out forwards;
+}
+
+@keyframes slideUp {
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+// Loading spinner
+@mixin loading-spinner($size: 20px, $color: $primary-color) {
+    width: $size;
+    height: $size;
+    // Handle currentColor specially since rgba() doesn't work with it
+    @if $color == currentColor {
+        border: 2px solid rgba(0, 0, 0, 0.3);
+        border-top: 2px solid currentColor;
+    } @else {
+        border: 2px solid rgba($color, 0.3);
+        border-top: 2px solid $color;
+    }
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+// Visually hidden (accessible)
+@mixin visually-hidden {
+    position: absolute !important;
+    clip: rect(1px, 1px, 1px, 1px);
+    clip-path: inset(50%);
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    padding: 0;
+    border: 0;
+    white-space: nowrap;
+}
