@@ -308,4 +308,419 @@ require_once get_template_directory() . '/includes/user-dashboard.php';
 
 // Include Custom Widgets
 require_once get_template_directory() . '/includes/widgets.php';
-?>
+
+/**
+ * Custom Login and Registration System
+ */
+
+/**
+ * Replace default WordPress login page
+ */
+function liftingtracker_custom_login_page() {
+    $action = isset($_GET['action']) ? $_GET['action'] : 'login';
+    
+    if ($action === 'register') {
+        // Load custom registration template
+        get_template_part('registration-template');
+        exit;
+    } else {
+        // Load custom login template
+        get_template_part('login-template');
+        exit;
+    }
+}
+
+/**
+ * Redirect login URL to custom template
+ */
+function liftingtracker_login_url($login_url, $redirect, $force_relogin) {
+    if (!is_admin() && !$force_relogin) {
+        return home_url('/login');
+    }
+    return $login_url;
+}
+add_filter('login_url', 'liftingtracker_login_url', 10, 3);
+
+/**
+ * Redirect registration URL to custom template
+ */
+function liftingtracker_registration_url($registration_url) {
+    if (!is_admin()) {
+        return home_url('/register');
+    }
+    return $registration_url;
+}
+add_filter('register_url', 'liftingtracker_registration_url');
+
+/**
+ * Add custom rewrite rules for login/registration
+ */
+function liftingtracker_custom_rewrite_rules() {
+    add_rewrite_rule('^login/?$', 'index.php?custom_login=1', 'top');
+    add_rewrite_rule('^register/?$', 'index.php?custom_register=1', 'top');
+}
+add_action('init', 'liftingtracker_custom_rewrite_rules');
+
+/**
+ * Add custom query vars
+ */
+function liftingtracker_custom_query_vars($vars) {
+    $vars[] = 'custom_login';
+    $vars[] = 'custom_register';
+    return $vars;
+}
+add_filter('query_vars', 'liftingtracker_custom_query_vars');
+
+/**
+ * Template redirect for custom login/registration
+ */
+function liftingtracker_template_redirect() {
+    if (get_query_var('custom_login') || get_query_var('custom_register')) {
+        liftingtracker_custom_login_page();
+    }
+}
+add_action('template_redirect', 'liftingtracker_template_redirect');
+
+/**
+ * Customize login redirect
+ */
+function liftingtracker_login_redirect($redirect_to, $request, $user) {
+    // Check if user has errors
+    if (isset($user->errors) && !empty($user->errors)) {
+        return home_url('/login?error=1');
+    }
+    
+    // Default redirect for successful login
+    if (empty($redirect_to) || $redirect_to === 'wp-admin/' || $redirect_to === admin_url()) {
+        return home_url('/dashboard');
+    }
+    
+    return $redirect_to;
+}
+add_filter('login_redirect', 'liftingtracker_login_redirect', 10, 3);
+
+/**
+ * Customize registration redirect
+ */
+function liftingtracker_registration_redirect($redirect_to, $user_id) {
+    return home_url('/dashboard');
+}
+add_filter('liftingtracker_registration_redirect', 'liftingtracker_registration_redirect', 10, 2);
+
+/**
+ * Hide admin bar for non-admin users
+ */
+function liftingtracker_hide_admin_bar() {
+    if (!current_user_can('administrator')) {
+        show_admin_bar(false);
+    }
+}
+add_action('after_setup_theme', 'liftingtracker_hide_admin_bar');
+
+/**
+ * Customize login form styling
+ */
+function liftingtracker_login_form_style() {
+    ?>
+    <style>
+        .login-form-custom {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-form-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            max-width: 400px;
+            width: 100%;
+        }
+        
+        .login-form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .login-form-header h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        
+        .login-form-header p {
+            color: #6b7280;
+            font-size: 1.125rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .btn-primary {
+            width: 100%;
+            background-color: #1f2937;
+            color: white;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.15s ease-in-out;
+        }
+        
+        .btn-primary:hover {
+            background-color: #374151;
+        }
+        
+        .error-message {
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+        
+        .success-message {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #16a34a;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+    </style>
+    <?php
+}
+add_action('liftingtracker_login_head', 'liftingtracker_login_form_style');
+
+/**
+ * Add custom user meta fields
+ */
+function liftingtracker_add_custom_user_meta_fields($user) {
+    $user_id = $user->ID;
+    ?>
+    <h3><?php _e('Fitness Profile', 'liftingtracker-pro'); ?></h3>
+    <table class="form-table">
+        <tr>
+            <th><label for="fitness_level"><?php _e('Fitness Level', 'liftingtracker-pro'); ?></label></th>
+            <td>
+                <select name="fitness_level" id="fitness_level">
+                    <option value="beginner" <?php selected(get_user_meta($user_id, 'liftingtracker_fitness_level', true), 'beginner'); ?>>Beginner</option>
+                    <option value="intermediate" <?php selected(get_user_meta($user_id, 'liftingtracker_fitness_level', true), 'intermediate'); ?>>Intermediate</option>
+                    <option value="advanced" <?php selected(get_user_meta($user_id, 'liftingtracker_fitness_level', true), 'advanced'); ?>>Advanced</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th><label for="primary_goal"><?php _e('Primary Goal', 'liftingtracker-pro'); ?></label></th>
+            <td>
+                <select name="primary_goal" id="primary_goal">
+                    <option value="build_muscle" <?php selected(get_user_meta($user_id, 'liftingtracker_primary_goal', true), 'build_muscle'); ?>>Build Muscle</option>
+                    <option value="lose_weight" <?php selected(get_user_meta($user_id, 'liftingtracker_primary_goal', true), 'lose_weight'); ?>>Lose Weight</option>
+                    <option value="maintain_weight" <?php selected(get_user_meta($user_id, 'liftingtracker_primary_goal', true), 'maintain_weight'); ?>>Maintain Weight</option>
+                    <option value="increase_strength" <?php selected(get_user_meta($user_id, 'liftingtracker_primary_goal', true), 'increase_strength'); ?>>Increase Strength</option>
+                    <option value="improve_endurance" <?php selected(get_user_meta($user_id, 'liftingtracker_primary_goal', true), 'improve_endurance'); ?>>Improve Endurance</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th><label for="current_weight"><?php _e('Current Weight', 'liftingtracker-pro'); ?></label></th>
+            <td>
+                <input type="number" name="current_weight" id="current_weight" value="<?php echo esc_attr(get_user_meta($user_id, 'liftingtracker_current_weight', true)); ?>" class="regular-text" />
+            </td>
+        </tr>
+        <tr>
+            <th><label for="target_weight"><?php _e('Target Weight', 'liftingtracker-pro'); ?></label></th>
+            <td>
+                <input type="number" name="target_weight" id="target_weight" value="<?php echo esc_attr(get_user_meta($user_id, 'liftingtracker_target_weight', true)); ?>" class="regular-text" />
+            </td>
+        </tr>
+    </table>
+    <?php
+}
+add_action('show_user_profile', 'liftingtracker_add_custom_user_meta_fields');
+add_action('edit_user_profile', 'liftingtracker_add_custom_user_meta_fields');
+
+/**
+ * Save custom user meta fields
+ */
+function liftingtracker_save_custom_user_meta_fields($user_id) {
+    if (!current_user_can('edit_user', $user_id)) {
+        return false;
+    }
+    
+    $fields = [
+        'fitness_level', 'primary_goal', 'current_weight', 'target_weight',
+        'height_feet', 'height_inches', 'height_cm', 'body_fat_percentage',
+        'preferred_units', 'years_training', 'workout_frequency', 'activity_level',
+        'protein_percentage', 'carbs_percentage', 'fat_percentage',
+        'dietary_restrictions', 'allergies', 'date_of_birth', 'gender'
+    ];
+    
+    foreach ($fields as $field) {
+        if (isset($_POST[$field])) {
+            update_user_meta($user_id, 'liftingtracker_' . $field, sanitize_text_field($_POST[$field]));
+        }
+    }
+}
+add_action('personal_options_update', 'liftingtracker_save_custom_user_meta_fields');
+add_action('edit_user_profile_update', 'liftingtracker_save_custom_user_meta_fields');
+
+/**
+ * Get user fitness data
+ */
+function liftingtracker_get_user_fitness_data($user_id = null) {
+    if (!$user_id) {
+        $user_id = get_current_user_id();
+    }
+    
+    if (!$user_id) {
+        return false;
+    }
+    
+    $fitness_data = [];
+    $fields = [
+        'fitness_level', 'primary_goal', 'current_weight', 'target_weight',
+        'height_feet', 'height_inches', 'height_cm', 'body_fat_percentage',
+        'preferred_units', 'years_training', 'workout_frequency', 'activity_level',
+        'protein_percentage', 'carbs_percentage', 'fat_percentage',
+        'dietary_restrictions', 'allergies', 'date_of_birth', 'gender'
+    ];
+    
+    foreach ($fields as $field) {
+        $fitness_data[$field] = get_user_meta($user_id, 'liftingtracker_' . $field, true);
+    }
+    
+    return $fitness_data;
+}
+
+/**
+ * Check if user has completed fitness profile
+ */
+function liftingtracker_user_has_complete_profile($user_id = null) {
+    if (!$user_id) {
+        $user_id = get_current_user_id();
+    }
+    
+    if (!$user_id) {
+        return false;
+    }
+    
+    $required_fields = ['fitness_level', 'primary_goal', 'current_weight'];
+    
+    foreach ($required_fields as $field) {
+        $value = get_user_meta($user_id, 'liftingtracker_' . $field, true);
+        if (empty($value)) {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+/**
+ * Disable default WordPress login/registration emails
+ */
+function liftingtracker_disable_default_emails() {
+    // Disable new user notification to admin
+    remove_action('register_new_user', 'wp_send_new_user_notifications');
+    remove_action('edit_user_created_user', 'wp_send_new_user_notifications');
+    
+    // Custom new user notification
+    add_action('liftingtracker_user_registered', 'liftingtracker_send_welcome_email');
+}
+add_action('init', 'liftingtracker_disable_default_emails');
+
+/**
+ * Send custom welcome email
+ */
+function liftingtracker_send_welcome_email($user_id) {
+    $user = get_userdata($user_id);
+    
+    if (!$user) {
+        return;
+    }
+    
+    $subject = __('Welcome to LiftingTracker Pro!', 'liftingtracker-pro');
+    $message = sprintf(
+        __('Hi %s,
+
+Welcome to LiftingTracker Pro! We\'re excited to have you on board.
+
+Your account has been created successfully. You can now:
+- Track your workouts
+- Monitor your progress
+- Set and achieve your fitness goals
+- Access your personalized dashboard
+
+Get started: %s
+
+If you have any questions, feel free to reach out to our support team.
+
+Best regards,
+The LiftingTracker Team', 'liftingtracker-pro'),
+        $user->display_name,
+        home_url('/dashboard')
+    );
+    
+    $headers = array('Content-Type: text/html; charset=UTF-8');
+    
+    wp_mail($user->user_email, $subject, nl2br($message), $headers);
+}
+
+/**
+ * Add login/logout menu items
+ */
+function liftingtracker_add_login_logout_menu_items($items, $args) {
+    if ($args->theme_location === 'primary') {
+        if (is_user_logged_in()) {
+            $items .= '<li class="menu-item"><a href="' . esc_url(wp_logout_url()) . '">' . __('Logout', 'liftingtracker-pro') . '</a></li>';
+        } else {
+            $items .= '<li class="menu-item"><a href="' . esc_url(home_url('/login')) . '">' . __('Login', 'liftingtracker-pro') . '</a></li>';
+            $items .= '<li class="menu-item"><a href="' . esc_url(home_url('/register')) . '">' . __('Register', 'liftingtracker-pro') . '</a></li>';
+        }
+    }
+    
+    return $items;
+}
+add_filter('wp_nav_menu_items', 'liftingtracker_add_login_logout_menu_items', 10, 2);
+
+/**
+ * Show social login options
+ */
+function liftingtracker_show_social_login_filter($show) {
+    // You can add conditions here to show/hide social login options
+    return apply_filters('liftingtracker_enable_social_login', true);
+}
+add_filter('liftingtracker_show_social_login', 'liftingtracker_show_social_login_filter');
