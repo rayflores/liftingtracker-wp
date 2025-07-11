@@ -3,7 +3,7 @@
  * LiftingTracker Pro Theme Functions
  * 
  * @package LiftingTrackerPro
- * @version 1.0.3
+ * @version 1.0.4
  */
 
 /** 
@@ -384,6 +384,38 @@ function liftingtracker_custom_rewrite_rules() {
     add_rewrite_rule('^register/?$', 'index.php?custom_register=1', 'top');
 }
 add_action('init', 'liftingtracker_custom_rewrite_rules');
+
+/**
+ * Flush rewrite rules on theme activation
+ */
+function liftingtracker_flush_rewrite_rules() {
+    liftingtracker_custom_rewrite_rules();
+    flush_rewrite_rules();
+}
+add_action('after_switch_theme', 'liftingtracker_flush_rewrite_rules');
+
+/**
+ * Add admin notice for permalink refresh (if needed)
+ */
+function liftingtracker_admin_notice_permalinks() {
+    if (get_transient('liftingtracker_rewrite_flush_needed')) {
+        ?>
+        <div class="notice notice-warning is-dismissible">
+            <p><strong>LiftingTracker Pro:</strong> Please go to <a href="<?php echo admin_url('options-permalink.php'); ?>">Settings &gt; Permalinks</a> and click "Save Changes" to refresh your URL structure.</p>
+        </div>
+        <?php
+        delete_transient('liftingtracker_rewrite_flush_needed');
+    }
+}
+add_action('admin_notices', 'liftingtracker_admin_notice_permalinks');
+
+/**
+ * Set transient on theme activation to show permalink notice
+ */
+function liftingtracker_activation_notice() {
+    set_transient('liftingtracker_rewrite_flush_needed', true, 300); // 5 minutes
+}
+add_action('after_switch_theme', 'liftingtracker_activation_notice');
 
 /**
  * Add custom query vars
@@ -856,5 +888,28 @@ add_action('init', function() {
         update_option('liftingtracker_rewrite_rules_flushed_v2', true);
     }
 });
+
+/**
+ * Add admin notice for permalink refresh (if needed)
+ */
+function liftingtracker_admin_notice_permalinks() {
+    if (get_transient('liftingtracker_rewrite_flush_needed')) {
+        ?>
+        <div class="notice notice-warning is-dismissible">
+            <p><strong>LiftingTracker Pro:</strong> Please go to <a href="<?php echo admin_url('options-permalink.php'); ?>">Settings &gt; Permalinks</a> and click "Save Changes" to refresh your URL structure.</p>
+        </div>
+        <?php
+        delete_transient('liftingtracker_rewrite_flush_needed');
+    }
+}
+add_action('admin_notices', 'liftingtracker_admin_notice_permalinks');
+
+/**
+ * Set transient on theme activation to show permalink notice
+ */
+function liftingtracker_activation_notice() {
+    set_transient('liftingtracker_rewrite_flush_needed', true, 300); // 5 minutes
+}
+add_action('after_switch_theme', 'liftingtracker_activation_notice');
 
 // Debug functions removed - authentication system is now working

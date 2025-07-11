@@ -1,0 +1,59 @@
+GNU GENERAL PUBLIC LICENSE
+Version 2, June 1991
+
+Copyright (C) 2025 LiftingTracker Pro Theme
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+---
+
+LiftingTracker Pro WordPress Theme
+Copyright (C) 2025
+
+This WordPress theme is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 2 of the License, or
+(at your option) any later version.
+
+This theme is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this theme. If not, see <https://www.gnu.org/licenses/>.
+
+---
+
+ADDITIONAL INFORMATION:
+
+This theme includes the following third-party components:
+
+1. Tailwind CSS - MIT License
+   https://tailwindcss.com/
+
+2. WordPress Scripts - GPL v2 or later
+   https://www.npmjs.com/package/@wordpress/scripts
+
+3. Various WordPress APIs and libraries - GPL v2 or later
+   https://wordpress.org/
+
+All third-party components are used in accordance with their respective licenses.
+
+For support and documentation, please visit:
+https://github.com/your-username/liftingtracker-pro
+
+For questions about this license, please contact:
+your-email@example.com
