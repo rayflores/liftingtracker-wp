@@ -71,12 +71,28 @@ function liftingtracker_pro_scripts() {
         '1.0.0'
     );
     
+    // Get asset dependencies
+    $asset_file = get_template_directory() . '/build/main.asset.php';
+    $asset_dependencies = array();
+    $asset_version = '1.0.0';
+    
+    if (file_exists($asset_file)) {
+        $asset_data = include $asset_file;
+        $asset_dependencies = $asset_data['dependencies'] ?? array();
+        $asset_version = $asset_data['version'] ?? '1.0.0';
+    }
+    
+    // Ensure WordPress dependencies are loaded
+    if (empty($asset_dependencies)) {
+        $asset_dependencies = array('wp-dom-ready', 'wp-i18n', 'wp-api-fetch');
+    }
+    
     // Main JavaScript (compiled and bundled)
     wp_enqueue_script(
         'liftingtracker-pro-script',
         get_template_directory_uri() . '/build/main.js',
-        array(),
-        $is_development ? time() : '1.0.0',
+        $asset_dependencies,
+        $is_development ? time() : $asset_version,
         true
     );
     
@@ -134,6 +150,28 @@ function liftingtracker_pro_custom_post_types() {
         'menu_icon' => 'dashicons-universal-access-alt',
         'supports' => array('title', 'editor', 'thumbnail', 'custom-fields'),
         'show_in_rest' => true,
+    ));
+    
+    // Workout Templates Post Type
+    register_post_type('workout-template', array(
+        'labels' => array(
+            'name' => 'Workout Templates',
+            'singular_name' => 'Workout Template',
+            'add_new' => 'Add New Template',
+            'add_new_item' => 'Add New Workout Template',
+            'edit_item' => 'Edit Workout Template',
+            'new_item' => 'New Workout Template',
+            'view_item' => 'View Workout Template',
+            'search_items' => 'Search Workout Templates',
+            'not_found' => 'No workout templates found',
+            'not_found_in_trash' => 'No workout templates found in trash'
+        ),
+        'public' => true,
+        'has_archive' => true,
+        'menu_icon' => 'dashicons-clipboard',
+        'supports' => array('title', 'editor', 'thumbnail', 'custom-fields'),
+        'show_in_rest' => true,
+        'rest_base' => 'workout-templates',
     ));
 }
 add_action('init', 'liftingtracker_pro_custom_post_types');
@@ -313,22 +351,8 @@ require_once get_template_directory() . '/includes/widgets.php';
  * Custom Login and Registration System
  */
 
-/**
- * Replace default WordPress login page
- */
-function liftingtracker_custom_login_page() {
-    $action = isset($_GET['action']) ? $_GET['action'] : 'login';
-    
-    if ($action === 'register') {
-        // Load custom registration template
-        get_template_part('registration-template');
-        exit;
-    } else {
-        // Load custom login template
-        get_template_part('login-template');
-        exit;
-    }
-}
+// Note: The custom login page function is no longer used as we handle
+// template loading directly in the template_redirect action
 
 /**
  * Redirect login URL to custom template
@@ -375,8 +399,16 @@ add_filter('query_vars', 'liftingtracker_custom_query_vars');
  * Template redirect for custom login/registration
  */
 function liftingtracker_template_redirect() {
-    if (get_query_var('custom_login') || get_query_var('custom_register')) {
-        liftingtracker_custom_login_page();
+    if (get_query_var('custom_login')) {
+        // Load custom login template
+        get_template_part('login-template');
+        exit;
+    }
+    
+    if (get_query_var('custom_register')) {
+        // Load custom registration template
+        get_template_part('registration-template');
+        exit;
     }
 }
 add_action('template_redirect', 'liftingtracker_template_redirect');
@@ -724,3 +756,105 @@ function liftingtracker_show_social_login_filter($show) {
     return apply_filters('liftingtracker_enable_social_login', true);
 }
 add_filter('liftingtracker_show_social_login', 'liftingtracker_show_social_login_filter');
+
+// Create default workout templates on theme activation
+function liftingtracker_pro_create_default_templates() {
+    // Check if we already have workout templates
+    $existing_templates = get_posts(array(
+        'post_type' => 'workout-template',
+        'posts_per_page' => 1,
+        'post_status' => 'publish'
+    ));
+    
+    if (!empty($existing_templates)) {
+        return; // Templates already exist
+    }
+    
+    // Create default workout templates
+    $templates = array(
+        array(
+            'title' => 'Push Day (Chest, Shoulders, Triceps)',
+            'content' => 'A complete push workout focusing on chest, shoulders, and triceps.',
+            'exercises' => array(
+                'Bench Press', 'Overhead Press', 'Incline Dumbbell Press', 
+                'Lateral Raises', 'Tricep Dips', 'Push-ups'
+            )
+        ),
+        array(
+            'title' => 'Pull Day (Back, Biceps)',
+            'content' => 'A complete pull workout focusing on back and biceps.',
+            'exercises' => array(
+                'Pull-ups', 'Deadlifts', 'Barbell Rows', 
+                'Lat Pulldowns', 'Bicep Curls', 'Hammer Curls'
+            )
+        ),
+        array(
+            'title' => 'Leg Day (Quads, Hamstrings, Glutes)',
+            'content' => 'A complete leg workout focusing on all major leg muscles.',
+            'exercises' => array(
+                'Squats', 'Romanian Deadlifts', 'Leg Press', 
+                'Lunges', 'Calf Raises', 'Leg Curls'
+            )
+        ),
+        array(
+            'title' => 'Upper Body Strength',
+            'content' => 'A comprehensive upper body strength training session.',
+            'exercises' => array(
+                'Bench Press', 'Pull-ups', 'Overhead Press', 
+                'Barbell Rows', 'Dips', 'Chin-ups'
+            )
+        )
+    );
+    
+    foreach ($templates as $template) {
+        $post_id = wp_insert_post(array(
+            'post_title' => $template['title'],
+            'post_content' => $template['content'],
+            'post_type' => 'workout-template',
+            'post_status' => 'publish',
+            'meta_input' => array(
+                'template_exercises' => json_encode($template['exercises'])
+            )
+        ));
+        
+        if (!is_wp_error($post_id)) {
+            // Add custom fields for the template
+            update_post_meta($post_id, 'difficulty_level', 'intermediate');
+            update_post_meta($post_id, 'estimated_duration', '60');
+            update_post_meta($post_id, 'equipment_needed', 'barbell,dumbbells,bench');
+        }
+    }
+}
+
+// Hook into theme activation
+add_action('after_switch_theme', 'liftingtracker_pro_create_default_templates');
+
+// Also create templates if they don't exist when accessing the site
+add_action('init', function() {
+    // Only run this once per day to avoid performance issues
+    $last_check = get_option('liftingtracker_last_template_check', 0);
+    if (time() - $last_check > DAY_IN_SECONDS) {
+        liftingtracker_pro_create_default_templates();
+        update_option('liftingtracker_last_template_check', time());
+    }
+});
+
+/**
+ * Flush rewrite rules on theme activation
+ */
+function liftingtracker_flush_rewrite_rules() {
+    liftingtracker_custom_rewrite_rules();
+    flush_rewrite_rules();
+}
+add_action('after_switch_theme', 'liftingtracker_flush_rewrite_rules');
+
+// Also flush on init if needed (only once)
+add_action('init', function() {
+    if (!get_option('liftingtracker_rewrite_rules_flushed_v2')) {
+        liftingtracker_custom_rewrite_rules();
+        flush_rewrite_rules();
+        update_option('liftingtracker_rewrite_rules_flushed_v2', true);
+    }
+});
+
+// Debug functions removed - authentication system is now working

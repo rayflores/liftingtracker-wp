@@ -86,17 +86,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // Handle navigation
         if (isset($_POST['next_step'])) {
-            if (validate_current_step($current_step, $form_data)) {
+            if (liftingtracker_validate_current_step($current_step, $form_data)) {
                 $current_step = min($current_step + 1, $total_steps);
                 $form_data['current_step'] = $current_step;
             } else {
-                $error_message = get_step_validation_message($current_step, $form_data);
+                $error_message = liftingtracker_get_step_validation_message($current_step, $form_data);
             }
         } elseif (isset($_POST['prev_step'])) {
             $current_step = max($current_step - 1, 1);
             $form_data['current_step'] = $current_step;
         } elseif (isset($_POST['complete_registration'])) {
-            if (validate_current_step($current_step, $form_data)) {
+            if (liftingtracker_validate_current_step($current_step, $form_data)) {
                 // Create user account
                 $user_data = [
                     'user_login' => $form_data['username'],
@@ -151,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Validation functions
-function validate_current_step($step, $data) {
+function liftingtracker_validate_current_step($step, $data) {
     switch ($step) {
         case 1:
             return !empty($data['email']) && 
@@ -164,7 +164,7 @@ function validate_current_step($step, $data) {
             return !empty($data['first_name']) && 
                    !empty($data['last_name']) && 
                    !empty($data['username']) && 
-                   validate_username($data['username']);
+                   liftingtracker_validate_username($data['username']);
         case 3:
             return true; // Physical attributes are optional
         case 4:
@@ -175,7 +175,7 @@ function validate_current_step($step, $data) {
     }
 }
 
-function get_step_validation_message($step, $data) {
+function liftingtracker_get_step_validation_message($step, $data) {
     switch ($step) {
         case 1:
             if (empty($data['email'])) return 'Email is required';
@@ -189,7 +189,7 @@ function get_step_validation_message($step, $data) {
             if (empty($data['first_name'])) return 'First name is required';
             if (empty($data['last_name'])) return 'Last name is required';
             if (empty($data['username'])) return 'Username is required';
-            if (!validate_username($data['username'])) return 'Username must be 3-20 characters, letters, numbers, and underscores only';
+            if (!liftingtracker_validate_username($data['username'])) return 'Username must be 3-20 characters, letters, numbers, and underscores only';
             return '';
         case 4:
             $total = (int)$data['protein_percentage'] + (int)$data['carbs_percentage'] + (int)$data['fat_percentage'];
@@ -200,12 +200,12 @@ function get_step_validation_message($step, $data) {
     }
 }
 
-function validate_username($username) {
+function liftingtracker_validate_username($username) {
     return preg_match('/^[a-zA-Z0-9_]{3,20}$/', $username);
 }
 
 // Helper functions for step display
-function get_step_title($step) {
+function liftingtracker_get_step_title($step) {
     switch ($step) {
         case 1: return 'Create Account';
         case 2: return 'Personal Information';
@@ -215,7 +215,7 @@ function get_step_title($step) {
     }
 }
 
-function get_step_icon($step) {
+function liftingtracker_get_step_icon($step) {
     switch ($step) {
         case 1: return 'user-plus';
         case 2: return 'user';
@@ -228,58 +228,54 @@ function get_step_icon($step) {
 get_header();
 ?>
 
-<main class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 py-12">
-    <div class="w-full max-w-md">
+<main class="auth-form">
+    <div class="auth-container">
         
         <!-- Back Button -->
-        <div class="mb-6">
-            <a href="<?php echo esc_url(home_url('/')); ?>" 
-               class="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-                Back to Home
-            </a>
-        </div>
+        <a href="<?php echo esc_url(home_url('/')); ?>" class="back-button">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Back to Home
+        </a>
 
         <!-- Header -->
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-4">Create Your Account</h1>
-            <p class="text-lg text-gray-600">Complete your profile to get started.</p>
+        <div class="auth-header">
+            <h1>Create Your Account</h1>
+            <p>Complete your profile to get started.</p>
         </div>
 
         <!-- Progress Indicator -->
-        <div class="mb-8">
+        <div class="progress-indicator">
             <div class="flex justify-between items-center mb-4">
                 <?php for ($i = 1; $i <= $total_steps; $i++): ?>
-                    <div class="flex items-center">
-                        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
-                            <?php echo $i < $current_step ? 'bg-green-600 text-white' : 
-                                     ($i == $current_step ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'); ?>">
+                    <div class="flex items-center <?php echo $i < $total_steps ? 'flex-1' : ''; ?>">
+                        <div class="flex items-center justify-center w-8 h-8 rounded-full border-2 <?php echo $i < $current_step ? 'bg-green-500 border-green-500 text-white' : ($i == $current_step ? 'bg-blue-500 border-blue-500 text-white' : 'border-gray-300 text-gray-400'); ?>">
                             <?php if ($i < $current_step): ?>
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                                 </svg>
                             <?php else: ?>
-                                <?php echo $i; ?>
+                                <span class="text-sm font-medium"><?php echo $i; ?></span>
                             <?php endif; ?>
                         </div>
                         <?php if ($i < $total_steps): ?>
-                            <div class="w-12 h-0.5 <?php echo $i < $current_step ? 'bg-green-600' : 'bg-gray-200'; ?>"></div>
+                            <div class="flex-1 h-1 mx-2 <?php echo $i < $current_step ? 'bg-green-500' : 'bg-gray-200'; ?> rounded-full"></div>
                         <?php endif; ?>
                     </div>
                 <?php endfor; ?>
             </div>
-            <div class="w-full bg-gray-200 rounded-full h-2">
-                <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" 
-                     style="width: <?php echo ($current_step / $total_steps) * 100; ?>%"></div>
+            <div class="text-center mb-6">
+                <p class="text-sm text-gray-600">
+                    Step <?php echo $current_step; ?> of <?php echo $total_steps; ?>
+                </p>
             </div>
         </div>
 
         <!-- Registration Form -->
-        <div class="bg-white rounded-xl shadow-2xl p-8">
+        <div class="auth-card registration-form">
             <h2 class="text-xl font-semibold text-gray-900 mb-6 text-center">
-                <?php echo get_step_title($current_step); ?>
+                <?php echo liftingtracker_get_step_title($current_step); ?>
             </h2>
             
             <form method="post" class="space-y-6" id="registration-form">
@@ -313,6 +309,9 @@ get_header();
                                        required
                                        placeholder="••••••••"
                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                                <div id="password-strength" class="mt-2 text-xs text-gray-500">
+                                    Password must be at least 8 characters long
+                                </div>
                             </div>
                             <div>
                                 <label for="confirm_password" class="block text-sm font-medium text-gray-700 mb-2">
@@ -324,17 +323,34 @@ get_header();
                                        required
                                        placeholder="••••••••"
                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                                <div id="password-match" class="mt-2 text-xs text-gray-500">
+                                    Passwords must match
+                                </div>
                             </div>
-                            <div class="flex items-center">
+                            <div class="flex items-start">
                                 <input type="checkbox" 
                                        id="terms_accepted" 
                                        name="terms_accepted" 
                                        value="1"
                                        <?php checked($form_data['terms_accepted']); ?>
-                                       class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500">
-                                <label for="terms_accepted" class="ml-2 text-sm text-gray-600">
-                                    I agree to the <a href="#" class="text-blue-600 hover:text-blue-500">Terms and Conditions</a>
+                                       class="mt-1 rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500 focus:ring-2">
+                                <label for="terms_accepted" class="ml-3 text-sm text-gray-600">
+                                    I agree to the <a href="#" class="text-blue-600 hover:text-blue-500 font-medium">Terms and Conditions</a>
                                 </label>
+                            </div>
+                            <div id="terms-warning" class="hidden bg-yellow-50 border border-yellow-200 rounded-lg p-3 mt-2">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm text-yellow-800">
+                                            Please accept the terms and conditions to continue.
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <?php
@@ -464,6 +480,8 @@ get_header();
                                                    name="height_inches" 
                                                    placeholder="Inches"
                                                    value="<?php echo esc_attr($form_data['height_inches']); ?>"
+                                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                                        </div>
                                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
                                         </div>
                                     </div>
@@ -651,44 +669,47 @@ get_header();
                 <?php endif; ?>
                 
                 <!-- Navigation Buttons -->
-                <div class="flex justify-between items-center">
+                <div class="flex justify-between items-center pt-6 border-t border-gray-200">
                     <button type="submit" 
                             name="prev_step"
                             <?php if ($current_step === 1): ?>disabled<?php endif; ?>
-                            class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                            class="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                         </svg>
                         Back
                     </button>
                     
-                    <?php if ($current_step > 1): ?>
-                        <button type="button" 
-                                onclick="startOver()"
-                                class="text-sm text-gray-500 hover:text-gray-700 transition-colors">
-                            Start Over
-                        </button>
-                    <?php endif; ?>
-                    
-                    <?php if ($current_step < $total_steps): ?>
-                        <button type="submit" 
-                                name="next_step"
-                                class="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors">
-                            Next
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                            </svg>
-                        </button>
-                    <?php else: ?>
-                        <button type="submit" 
-                                name="complete_registration"
-                                class="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
-                            Complete Registration
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                        </button>
-                    <?php endif; ?>
+                    <div class="flex items-center gap-3">
+                        <?php if ($current_step > 1): ?>
+                            <button type="button" 
+                                    onclick="startOver()"
+                                    class="text-sm text-gray-500 hover:text-gray-700 transition-colors">
+                                Start Over
+                            </button>
+                        <?php endif; ?>
+                        
+                        <?php if ($current_step < $total_steps): ?>
+                            <button type="submit" 
+                                    name="next_step"
+                                    id="next-button"
+                                    class="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                Next
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </button>
+                        <?php else: ?>
+                            <button type="submit" 
+                                    name="complete_registration"
+                                    class="flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Complete Registration
+                            </button>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </form>
         </div>
@@ -723,7 +744,149 @@ document.querySelectorAll('input[name="preferred_units"]').forEach(radio => {
     });
 });
 
-// Handle macro percentage calculation
+// Terms checkbox validation and button state management
+function updateNextButtonState() {
+    const currentStep = <?php echo $current_step; ?>;
+    const nextButton = document.getElementById('next-button');
+    
+    if (currentStep === 1 && nextButton) {
+        const termsCheckbox = document.getElementById('terms_accepted');
+        const email = document.getElementById('email');
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirm_password');
+        const termsWarning = document.getElementById('terms-warning');
+        
+        // Check if all required fields are filled and terms are accepted
+        const isEmailValid = email && email.value.trim() !== '' && email.validity.valid;
+        const isPasswordValid = password && password.value.trim() !== '' && password.value.length >= 8;
+        const isConfirmPasswordValid = confirmPassword && confirmPassword.value.trim() !== '' && 
+                                     password && password.value === confirmPassword.value;
+        const isTermsAccepted = termsCheckbox && termsCheckbox.checked;
+        
+        const isValid = isEmailValid && isPasswordValid && isConfirmPasswordValid && isTermsAccepted;
+        
+        // Update button state
+        nextButton.disabled = !isValid;
+        if (!isValid) {
+            nextButton.classList.add('opacity-50', 'cursor-not-allowed');
+            nextButton.classList.remove('hover:bg-blue-700');
+        } else {
+            nextButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            nextButton.classList.add('hover:bg-blue-700');
+        }
+        
+        // Show/hide terms warning
+        if (termsWarning) {
+            if (!isTermsAccepted && (isEmailValid || isPasswordValid || isConfirmPasswordValid)) {
+                termsWarning.classList.remove('hidden');
+            } else {
+                termsWarning.classList.add('hidden');
+            }
+        }
+    }
+}
+
+// Real-time validation for step 1
+document.addEventListener('DOMContentLoaded', function() {
+    const currentStep = <?php echo $current_step; ?>;
+    
+    if (currentStep === 1) {
+        const requiredFields = ['email', 'password', 'confirm_password'];
+        const termsCheckbox = document.getElementById('terms_accepted');
+        
+        // Initial state check
+        updateNextButtonState();
+        
+        // Add event listeners to all required fields
+        requiredFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.addEventListener('input', updateNextButtonState);
+                field.addEventListener('change', updateNextButtonState);
+            }
+        });
+        
+        // Terms checkbox listener
+        if (termsCheckbox) {
+            termsCheckbox.addEventListener('change', function() {
+                updateNextButtonState();
+            });
+        }
+        
+        // Password matching validation
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirm_password');
+        const passwordStrength = document.getElementById('password-strength');
+        const passwordMatch = document.getElementById('password-match');
+        
+        function validatePasswordStrength() {
+            const passwordValue = password ? password.value : '';
+            
+            if (passwordStrength) {
+                if (passwordValue.length === 0) {
+                    passwordStrength.textContent = 'Password must be at least 8 characters long';
+                    passwordStrength.className = 'mt-2 text-xs text-gray-500';
+                } else if (passwordValue.length < 8) {
+                    passwordStrength.textContent = `Password too short (${passwordValue.length}/8 characters)`;
+                    passwordStrength.className = 'mt-2 text-xs text-red-500';
+                } else {
+                    passwordStrength.textContent = 'Password length is good';
+                    passwordStrength.className = 'mt-2 text-xs text-green-500';
+                }
+            }
+            
+            if (password) {
+                if (passwordValue.length >= 8) {
+                    password.classList.remove('border-red-500', 'focus:border-red-500');
+                    password.classList.add('border-gray-300', 'focus:border-blue-500');
+                } else if (passwordValue.length > 0) {
+                    password.classList.add('border-red-500', 'focus:border-red-500');
+                    password.classList.remove('border-gray-300', 'focus:border-blue-500');
+                }
+            }
+            
+            validatePasswordMatch();
+            updateNextButtonState();
+        }
+        
+        function validatePasswordMatch() {
+            const passwordValue = password ? password.value : '';
+            const confirmValue = confirmPassword ? confirmPassword.value : '';
+            
+            if (passwordMatch) {
+                if (confirmValue.length === 0) {
+                    passwordMatch.textContent = 'Passwords must match';
+                    passwordMatch.className = 'mt-2 text-xs text-gray-500';
+                } else if (passwordValue !== confirmValue) {
+                    passwordMatch.textContent = 'Passwords do not match';
+                    passwordMatch.className = 'mt-2 text-xs text-red-500';
+                } else {
+                    passwordMatch.textContent = 'Passwords match';
+                    passwordMatch.className = 'mt-2 text-xs text-green-500';
+                }
+            }
+            
+            if (confirmPassword) {
+                if (confirmValue.length > 0 && passwordValue !== confirmValue) {
+                    confirmPassword.classList.add('border-red-500', 'focus:border-red-500');
+                    confirmPassword.classList.remove('border-gray-300', 'focus:border-blue-500');
+                } else {
+                    confirmPassword.classList.remove('border-red-500', 'focus:border-red-500');
+                    confirmPassword.classList.add('border-gray-300', 'focus:border-blue-500');
+                }
+            }
+            
+            updateNextButtonState();
+        }
+        
+        if (password && confirmPassword) {
+            password.addEventListener('input', validatePasswordStrength);
+            confirmPassword.addEventListener('input', validatePasswordMatch);
+        }
+    }
+});
+
+// Handle macro percentage calculation for step 4
 function updateMacroTotal() {
     const protein = parseInt(document.getElementById('protein_percentage').value) || 0;
     const carbs = parseInt(document.getElementById('carbs_percentage').value) || 0;
@@ -731,25 +894,29 @@ function updateMacroTotal() {
     const total = protein + carbs + fat;
     
     const totalElement = document.getElementById('macro-total');
-    totalElement.textContent = `Total: ${total}%`;
-    
-    if (total === 100) {
-        totalElement.className = 'mt-2 text-sm text-center text-green-600';
-    } else {
-        totalElement.className = 'mt-2 text-sm text-center text-red-600';
+    if (totalElement) {
+        totalElement.textContent = `Total: ${total}%`;
+        
+        if (total === 100) {
+            totalElement.className = 'mt-2 text-sm text-center text-green-600 font-medium';
+        } else {
+            totalElement.className = 'mt-2 text-sm text-center text-red-600 font-medium';
+        }
     }
 }
 
-// Add event listeners for macro inputs
-['protein_percentage', 'carbs_percentage', 'fat_percentage'].forEach(id => {
-    const element = document.getElementById(id);
-    if (element) {
-        element.addEventListener('input', updateMacroTotal);
-    }
+// Add event listeners for macro inputs if on step 4
+<?php if ($current_step === 4): ?>
+document.addEventListener('DOMContentLoaded', function() {
+    ['protein_percentage', 'carbs_percentage', 'fat_percentage'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('input', updateMacroTotal);
+        }
+    });
+    updateMacroTotal(); // Initial calculation
 });
-
-// Initialize macro total
-updateMacroTotal();
+<?php endif; ?>
 
 // Start over function
 function startOver() {
@@ -758,29 +925,29 @@ function startOver() {
     }
 }
 
-// Form validation
+// Form validation on submit
 document.getElementById('registration-form').addEventListener('submit', function(e) {
     const currentStep = <?php echo $current_step; ?>;
     
     if (currentStep === 1) {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirm_password').value;
-        const termsAccepted = document.getElementById('terms_accepted').checked;
+        const email = document.getElementById('email');
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirm_password');
+        const termsAccepted = document.getElementById('terms_accepted');
         
-        if (!email || !password || !confirmPassword || !termsAccepted) {
+        if (!email.value || !password.value || !confirmPassword.value || !termsAccepted.checked) {
             e.preventDefault();
-            alert('Please fill in all required fields.');
+            alert('Please fill in all required fields and accept the terms and conditions.');
             return false;
         }
         
-        if (password !== confirmPassword) {
+        if (password.value !== confirmPassword.value) {
             e.preventDefault();
             alert('Passwords do not match.');
             return false;
         }
         
-        if (password.length < 8) {
+        if (password.value.length < 8) {
             e.preventDefault();
             alert('Password must be at least 8 characters long.');
             return false;
@@ -788,11 +955,11 @@ document.getElementById('registration-form').addEventListener('submit', function
     }
     
     if (currentStep === 4) {
-        const total = parseInt(document.getElementById('protein_percentage').value) || 0;
+        const protein = parseInt(document.getElementById('protein_percentage').value) || 0;
         const carbs = parseInt(document.getElementById('carbs_percentage').value) || 0;
         const fat = parseInt(document.getElementById('fat_percentage').value) || 0;
         
-        if (total + carbs + fat !== 100) {
+        if (protein + carbs + fat !== 100) {
             e.preventDefault();
             alert('Macro percentages must total 100%.');
             return false;

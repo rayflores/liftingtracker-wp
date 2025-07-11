@@ -6,7 +6,7 @@
  */
 
 // Import WordPress dependencies
-import { domReady } from "@wordpress/dom-ready";
+import domReady from "@wordpress/dom-ready";
 import { __ } from "@wordpress/i18n";
 
 // Import theme modules
@@ -21,14 +21,27 @@ import "../scss/main.scss";
 /**
  * Initialize theme when DOM is ready
  */
-domReady(() => {
+// Add fallback for domReady in case WordPress dependencies aren't loaded
+const initializeWhenReady = () => {
   console.log(
     __("🏋️ LiftingTracker Pro theme initialized", "liftingtracker-pro")
   );
 
   // Initialize theme components
   initializeTheme();
-});
+};
+
+// Try to use WordPress domReady, fallback to standard DOM ready
+if (typeof domReady === "function") {
+  domReady(initializeWhenReady);
+} else {
+  // Fallback to standard DOM ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeWhenReady);
+  } else {
+    initializeWhenReady();
+  }
+}
 
 /**
  * Initialize all theme functionality

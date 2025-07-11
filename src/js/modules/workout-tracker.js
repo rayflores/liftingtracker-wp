@@ -60,13 +60,33 @@ class WorkoutTracker {
       });
       this.renderWorkoutTemplates(templates);
     } catch (error) {
-      console.error("Error loading workout templates:", error);
+      console.log(
+        "Workout templates endpoint not available yet:",
+        error.message
+      );
+      // If no templates are available, show a default message or skip this step
+      this.renderWorkoutTemplates([]);
     }
   }
 
   renderWorkoutTemplates(templates) {
     const container = document.querySelector(".workout-templates");
     if (!container) return;
+
+    if (templates.length === 0) {
+      container.innerHTML = `
+        <div class="no-templates">
+          <p>${__(
+            "No workout templates available yet.",
+            "liftingtracker-pro"
+          )}</p>
+          <button class="btn btn-primary start-workout">
+            ${__("Start Custom Workout", "liftingtracker-pro")}
+          </button>
+        </div>
+      `;
+      return;
+    }
 
     const html = templates
       .map(
