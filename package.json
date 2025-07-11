@@ -1,6 +1,6 @@
 {
-  "name": "liftingtracker-pro",
-  "version": "1.0.0",
+  "name": "liftingtracker",
+  "version": "1.0.3",
   "description": "LiftingTracker Pro WordPress Theme",
   "author": "Your Name",
   "license": "GPL-2.0-or-later",
@@ -29,3 +29,4 @@
     "@wordpress/i18n": "^4.49.0"
   }
 }
+

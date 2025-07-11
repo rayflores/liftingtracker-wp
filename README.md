@@ -1,5 +1,5 @@
 # LiftingTracker Pro WordPress Theme
-## v1.0.2
+## v1.0.3
 A modern, responsive WordPress theme for fitness tracking and workout management, built with JavaScript ES6+ modules, SCSS, and **Tailwind CSS** using `@wordpress/wp-scripts`.
 
 ## Features
